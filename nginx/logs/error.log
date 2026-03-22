@@ -1,0 +1,18 @@
+2026/03/21 02:44:52 [emerg] 131815#0: bind() to 0.0.0.0:80 failed (13: Permission denied)
+2026/03/21 04:29:47 [notice] 140374#0: signal process started
+2026/03/21 04:29:47 [error] 140374#0: invalid PID number "" in "/home/liujixiang/devops/make/nginx/logs/nginx.pid"
+2026/03/21 04:33:39 [notice] 140671#0: signal process started
+2026/03/21 05:23:54 [notice] 155975#0: signal process started
+2026/03/21 05:31:52 [notice] 156307#0: signal process started
+2026/03/21 05:58:45 [notice] 159200#0: signal process started
+2026/03/21 06:07:59 [error] 159202#0: *12 open() "/home/liujixiang/devops/make/nginx/html/favicon.ico" failed (2: No such file or directory), client: 127.0.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "127.0.0.1:8443", referrer: "https://127.0.0.1:8443/"
+2026/03/23 01:48:56 [notice] 165836#0: signal process started
+2026/03/23 01:49:47 [error] 165838#0: *14 open() "/home/liujixiang/devops/make/nginx/html/notfound" failed (2: No such file or directory), client: 127.0.0.1, server: localhost, request: "GET /notfound HTTP/1.1", host: "127.0.0.1:8080"
+2026/03/23 01:49:47 [error] 165840#0: *16 open() "/home/liujixiang/devops/make/nginx/html/api/test" failed (2: No such file or directory), client: 127.0.0.1, server: localhost, request: "GET /api/test HTTP/1.1", host: "127.0.0.1:8080", referrer: "https://google.com"
+2026/03/23 02:25:04 [emerg] 167026#0: bind() to 0.0.0.0:8080 failed (98: Address already in use)
+2026/03/23 02:25:04 [emerg] 167026#0: bind() to 0.0.0.0:8080 failed (98: Address already in use)
+2026/03/23 02:25:04 [emerg] 167026#0: bind() to 0.0.0.0:8080 failed (98: Address already in use)
+2026/03/23 02:25:04 [emerg] 167026#0: bind() to 0.0.0.0:8080 failed (98: Address already in use)
+2026/03/23 02:25:04 [emerg] 167026#0: bind() to 0.0.0.0:8080 failed (98: Address already in use)
+2026/03/23 02:25:04 [emerg] 167026#0: still could not bind()
+2026/03/23 02:27:06 [notice] 167073#0: signal process started
