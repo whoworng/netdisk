@@ -1,0 +1,14 @@
+[Unit]
+Description=listen 5000 port's app
+After=network.target
+
+[Service]
+Type=simple
+WorKingDirectory=/home/liujixiang/devops/project/app
+ExecStart=/usr/bin/python3 app.py
+Restart=always
+RestartSec=5
+User=liujixiang
+
+[Install]
+WantedBY=multi-user.target
