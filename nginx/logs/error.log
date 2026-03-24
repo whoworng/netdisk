@@ -16,3 +16,17 @@
 2026/03/23 02:25:04 [emerg] 167026#0: bind() to 0.0.0.0:8080 failed (98: Address already in use)
 2026/03/23 02:25:04 [emerg] 167026#0: still could not bind()
 2026/03/23 02:27:06 [notice] 167073#0: signal process started
+2026/03/23 06:35:26 [emerg] 189231#0: bind() to 0.0.0.0:8080 failed (98: Address already in use)
+2026/03/23 06:35:26 [emerg] 189231#0: bind() to 0.0.0.0:8080 failed (98: Address already in use)
+2026/03/23 06:35:26 [emerg] 189231#0: bind() to 0.0.0.0:8080 failed (98: Address already in use)
+2026/03/23 06:35:26 [emerg] 189231#0: bind() to 0.0.0.0:8080 failed (98: Address already in use)
+2026/03/23 06:35:26 [emerg] 189231#0: bind() to 0.0.0.0:8080 failed (98: Address already in use)
+2026/03/23 06:35:26 [emerg] 189231#0: still could not bind()
+2026/03/23 06:36:04 [emerg] 189303#0: bind() to 0.0.0.0:8080 failed (98: Address already in use)
+2026/03/23 06:36:04 [emerg] 189303#0: bind() to 0.0.0.0:8080 failed (98: Address already in use)
+2026/03/23 06:36:04 [emerg] 189303#0: bind() to 0.0.0.0:8080 failed (98: Address already in use)
+2026/03/23 06:36:04 [emerg] 189303#0: bind() to 0.0.0.0:8080 failed (98: Address already in use)
+2026/03/23 06:36:04 [emerg] 189303#0: bind() to 0.0.0.0:8080 failed (98: Address already in use)
+2026/03/23 06:36:04 [emerg] 189303#0: still could not bind()
+2026/03/23 06:37:42 [alert] 167118#0: unlink() "/home/liujixiang/devops/make/nginx/logs/nginx.pid" failed (2: No such file or directory)
+2026/03/23 06:51:14 [error] 191103#0: *1 open() "/home/liujixiang/devops/project/app/favicon.ico" failed (2: No such file or directory), client: 127.0.0.1, server: _, request: "GET /favicon.ico HTTP/1.1", host: "127.0.0.1:8080", referrer: "http://127.0.0.1:8080/"
