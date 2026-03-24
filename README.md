@@ -1,10 +1,54 @@
-  │一个简单的网盘项目，包含前端、后端和运维三个部分。前端使用React框架，后端使用Node.js和Express框架，数据库使用MongoDB。初版项目仅做基础部分
-  ┌──────┬────────────────────────────────────────┐
-  │ 类别 │                  技术                  │
-  ├──────┼────────────────────────────────────────┤
-  │ 基础 │ Linux、Nginx、MySQL、Redis、Shell、Git │
-  ├──────┼────────────────────────────────────────┤
-  │ 容器 │ Docker                                 │
-  ├──────┼────────────────────────────────────────┤
-  │ 监控 │ Prometheus、Grafana、ELK、Alertmanager │
-  └──────┴────────────────────────────────────────┘
+# NetDisk
+
+一个简单的网盘项目，用于学习应用运维技术。从本机部署到 Docker 容器化，逐步实践完整的运维技术栈。
+
+## 技术栈
+
+| 类别 | 技术 |
+|------|------|
+| 基础 | Linux、Nginx、MySQL、Redis、Shell、Git |
+| 容器 | Docker |
+| 监控 | Prometheus、Grafana、ELK、Alertmanager |
+
+## 项目架构
+
+```
+用户浏览器
+    │
+    ▼
+  Nginx（反向代理 + 静态资源）
+    │
+    ▼
+  Flask 应用（Python）
+    ├── MySQL（用户数据、文件元数据）
+    └── Redis（会话缓存、分享链接）
+```
+
+## 目录结构
+
+```
+.
+├── app/                  # Flask 应用代码
+│   ├── app.py            # 入口文件
+│   ├── config.py         # 配置
+│   ├── models.py         # 数据模型
+│   ├── auth.py           # 用户认证
+│   ├── files.py          # 文件管理
+│   ├── templates/        # 前端模板
+│   ├── static/           # 静态资源
+│   └── logs/             # 应用日志
+├── nginx/                # Nginx 配置
+├── shell/                # 运维脚本
+│   ├── backup_db.sh      # 数据库备份
+│   └── tar_backup_file.sh # 文件备份
+├── backup/               # 备份存放
+│   ├── database/
+│   └── file/
+└── media/                # 用户上传文件
+    └── uploads/
+```
+
+## 版本
+
+- **v1.0** - 本机部署版本（Nginx + Flask + MySQL + Redis + systemd）
+- **v2.0** - Docker 容器化版本（计划中）
