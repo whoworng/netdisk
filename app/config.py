@@ -26,6 +26,6 @@ class Config:
 
     # 文件存储
     UPLOAD_FOLDER = os.getenv(
-        "UPLOAD_FOLDER", "/home/liujixiang/devops/project/media/uploads"
+        "UPLOAD_FOLDER", "/app/uploads"
     )
     MAX_CONTENT_LENGTH = 200 * 1024 * 1024  # 最大 200MB

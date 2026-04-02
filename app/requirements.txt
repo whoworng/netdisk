@@ -5,3 +5,4 @@ pymysql==1.1.*
 redis==5.2.*
 cryptography==44.*
 python-dotenv==1.1.*
+gunicorn==23.*

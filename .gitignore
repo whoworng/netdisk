@@ -1,0 +1,10 @@
+app/.env
+app/__pycache__/
+app/logs/
+media/uploads/
+backup/
+
+*.pyc
+*.pyo
+*.pyd
+.DS_Store

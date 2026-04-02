@@ -1,0 +1,72 @@
+services:
+  netdisk_app:
+    build: ./app
+    #引入环境变量文件，以替代environment显式写入
+    env_file:
+      - ./app/.env
+    volumes:
+      - ./media/uploads/:/app/uploads
+    #普通的depends_on仍然会导致netdisk_app在mysql真正ready前就启动，应该改成健康检查
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - netdisk
+
+  web:
+    image: nginx:1.27-alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - "./nginx/conf/nginx.conf:/etc/nginx/nginx.conf"
+      #动静态资源分离(注意static后不要有/)
+      - "./app/static:/app/static:ro"
+    networks:
+      - netdisk
+    depends_on:
+      netdisk_app:
+        condition: service_started
+
+  database:
+    image: mysql:8.4
+    volumes:
+      - database:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass123
+      MYSQL_DATABASE: netdisk
+      MYSQL_USER: netdisk
+      MYSQL_PASSWORD: netdisk123
+    networks:
+      - netdisk
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "127.0.0.1",
+          "-uroot",
+          "-prootpass123",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 10s
+
+  redis:
+    image: redis:7.4-alpine
+    networks:
+      - netdisk
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+networks:
+  netdisk: {}
+volumes:
+  database: {}
