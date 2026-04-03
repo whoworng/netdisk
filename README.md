@@ -51,4 +51,4 @@
 ## 版本
 
 - **v1.0** - 本机部署版本（Nginx + Flask + MySQL + Redis + systemd）
-- **v2.0** - Docker 容器化版本（计划中）
+- **v2.0** - Docker 容器化版本
