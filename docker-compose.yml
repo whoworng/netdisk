@@ -1,6 +1,9 @@
 services:
   netdisk_app:
-    build: ./app
+    build: 
+      context: ./app
+      args:
+        PIP_INDEX_URL: https://pypi.tuna.tsinghua.edu.cn/simple
     #引入环境变量文件，以替代environment显式写入
     env_file:
       - ./app/.env
