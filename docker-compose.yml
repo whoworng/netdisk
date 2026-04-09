@@ -1,5 +1,6 @@
 services:
   netdisk_app:
+    #构建默认使用清华源
     build: 
       context: ./app
       args:
