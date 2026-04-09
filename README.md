@@ -48,6 +48,26 @@
     └── uploads/
 ```
 
+## 注意
+拉镜像超时可以修改Dockerfile第四行为指定国内镜像源
+RUN pip install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+需要加入你自己的app/.env使用
+模板：
+```
+DB_HOST=database
+DB_PORT=3306
+DB_NAME=netdisk
+
+# Redis
+REDIS_HOST=redis
+REDIS_PORT=6379
+
+# 应用
+SECRET_KEY=change-me-to-a-random-string
+UPLOAD_FOLDER=/app/uploads
+```
+
 ## 版本
 
 - **v1.0** - 本机部署版本（Nginx + Flask + MySQL + Redis + systemd）
