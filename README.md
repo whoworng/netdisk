@@ -49,7 +49,7 @@
 ```
 
 ## 注意
-拉镜像超时可以修改Dockerfile第四行为指定国内镜像源
+拉镜像超时可以修改Dockerfile第4行为指定国内镜像源
 ```
 RUN pip install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
