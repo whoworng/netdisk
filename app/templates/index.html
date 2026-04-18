@@ -1,52 +1,221 @@
 {% extends "base.html" %}
-{% block title %}我的文件 - NetDisk{% endblock %}
 {% block content %}
-<div class="file-header">
-    <h2>我的文件</h2>
-    <form method="POST" action="{{ url_for('files.upload') }}" enctype="multipart/form-data" class="upload-form">
-        <input type="file" name="file" required>
-        <button type="submit" class="btn">上传</button>
-    </form>
+<!-- 统计卡片 -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-start border-primary border-4 py-2">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col me-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">已用空间</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">42.5 GB / 100 GB</div>
+                    </div>
+                    <div class="col-auto"><i class="bi bi-cloud-upload text-gray-300 h3"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-start border-success border-4 py-2">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col me-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">文件总数</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ files|length }} 个文件</div>
+                    </div>
+                    <div class="col-auto"><i class="bi bi-file-earmark-check text-gray-300 h3"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-start border-info border-4 py-2">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col me-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">今日下载</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">128 次</div>
+                    </div>
+                    <div class="col-auto"><i class="bi bi-download text-gray-300 h3"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-start border-warning border-4 py-2">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col me-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">安全警告</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
+                    </div>
+                    <div class="col-auto"><i class="bi bi-shield-check text-gray-300 h3"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<table class="file-table">
-    <thead>
-        <tr>
-            <th>文件名</th>
-            <th>大小</th>
-            <th>上传时间</th>
-            <th>操作</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for file in files %}
-        <tr>
-            <td>{{ file.original_name }}</td>
-            <td>{{ "%.1f"|format(file.size / 1024) }} KB</td>
-            <td>{{ file.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
-            <td class="actions">
-                <a href="{{ url_for('files.download', file_id=file.id) }}" class="btn btn-sm">下载</a>
-
-                <form method="POST" action="{{ url_for('files.create_share', file_id=file.id) }}" class="inline-form">
-                    <select name="hours">
-                        <option value="1">1小时</option>
-                        <option value="24" selected>24小时</option>
-                        <option value="168">7天</option>
-                    </select>
-                    <button type="submit" class="btn btn-sm btn-share">分享</button>
+<div class="row">
+    <!-- 文件列表 (主体) -->
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">我的文件库</h6>
+                <form method="POST" action="{{ url_for('files.upload') }}" enctype="multipart/form-data" class="d-flex gap-2">
+                    <input type="file" name="file" class="form-control form-control-sm" required>
+                    <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-upload"></i> 上传</button>
                 </form>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="px-4">文件名</th>
+                                <th>大小</th>
+                                <th>修改日期</th>
+                                <th class="text-end px-4">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for file in files %}
+                            <tr>
+                                <td class="px-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="rounded bg-light p-2 me-3"><i class="bi bi-file-earmark-text text-primary"></i></div>
+                                        <span class="fw-semibold text-dark">{{ file.original_name }}</span>
+                                    </div>
+                                </td>
+                                <td>{{ "%.1f"|format(file.size / 1024) }} KB</td>
+                                <td>{{ file.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td class="text-end px-4">
+                                    <div class="btn-group shadow-sm">
+                                        <a href="{{ url_for('files.download', file_id=file.id) }}" class="btn btn-white btn-sm" title="下载"><i class="bi bi-download"></i></a>
+                                        <button type="button" class="btn btn-white btn-sm" data-bs-toggle="modal" data-bs-target="#shareModal{{ file.id }}"><i class="bi bi-share"></i></button>
+                                        <form method="POST" action="{{ url_for('files.delete', file_id=file.id) }}" class="d-inline" onsubmit="return confirm('确定删除？')">
+                                            <button type="submit" class="btn btn-white btn-sm text-danger"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </div>
 
-                <form method="POST" action="{{ url_for('files.delete', file_id=file.id) }}" class="inline-form"
-                      onsubmit="return confirm('确定删除？')">
-                    <button type="submit" class="btn btn-sm btn-danger">删除</button>
-                </form>
-            </td>
-        </tr>
-        {% else %}
-        <tr>
-            <td colspan="4" class="empty">还没有文件，上传一个吧</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+                                    <!-- 分享模态框 -->
+                                    <div class="modal fade" id="shareModal{{ file.id }}" tabindex="-1">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content border-0 shadow">
+                                                <form method="POST" action="{{ url_for('files.create_share', file_id=file.id) }}">
+                                                    <div class="modal-header border-bottom-0">
+                                                        <h5 class="modal-title">创建分享链接</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p class="text-muted">设置链接有效期：</p>
+                                                        <select name="hours" class="form-select shadow-none">
+                                                            <option value="1">1 小时</option>
+                                                            <option value="24" selected>24 小时</option>
+                                                            <option value="168">7 天</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="modal-footer border-top-0">
+                                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>
+                                                        <button type="submit" class="btn btn-primary px-4">生成链接</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted">
+                                    <i class="bi bi-folder2-open display-4 d-block mb-3"></i>
+                                    暂无文件，请开始上传
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 侧边统计图 & 活动日志 -->
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header bg-white py-3">
+                <h6 class="m-0 font-weight-bold text-primary">存储趋势分析</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-area" style="height: 240px;">
+                    <canvas id="myAreaChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-white py-3">
+                <h6 class="m-0 font-weight-bold text-primary">最近活动记录</h6>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush" style="font-size: 0.85rem;">
+                    <div class="list-group-item bg-transparent py-3">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1 fw-bold">系统更新</h6>
+                            <small class="text-muted">3分钟前</small>
+                        </div>
+                        <p class="mb-1 text-muted">Brotli 压缩模块已成功启用并生效。</p>
+                    </div>
+                    <div class="list-group-item bg-transparent py-3">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1 fw-bold">文件上传完成</h6>
+                            <small class="text-muted">2小时前</small>
+                        </div>
+                        <p class="mb-1 text-muted">用户 {{ current_user.username }} 上传了 "test_data.zip"。</p>
+                    </div>
+                    <div class="list-group-item bg-transparent py-3 text-center border-0">
+                        <a href="#" class="text-primary text-decoration-none">查看所有日志 <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // 渲染存储趋势图表 (增加页面初始化负载)
+    var ctx = document.getElementById("myAreaChart");
+    var myLineChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ["4月12", "4月13", "4月14", "4月15", "4月16", "4月17", "4月18"],
+        datasets: [{
+          label: "存储占用 (GB)",
+          lineTension: 0.3,
+          backgroundColor: "rgba(78, 115, 223, 0.05)",
+          borderColor: "rgba(78, 115, 223, 1)",
+          pointRadius: 3,
+          pointBackgroundColor: "rgba(78, 115, 223, 1)",
+          pointBorderColor: "rgba(78, 115, 223, 1)",
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+          pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+          pointHitRadius: 10,
+          pointBorderWidth: 2,
+          data: [12.5, 15.2, 18.9, 24.1, 32.5, 38.2, 42.5],
+        }],
+      },
+      options: {
+        maintainAspectRatio: false,
+        layout: { padding: { left: 10, right: 25, top: 25, bottom: 0 } },
+        scales: {
+          x: { grid: { display: false, drawBorder: false } },
+          y: { ticks: { maxTicksLimit: 5, padding: 10 } }
+        },
+        plugins: { legend: { display: false } }
+      }
+    });
+</script>
 {% endblock %}
