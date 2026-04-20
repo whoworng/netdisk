@@ -1,182 +1,265 @@
 {% extends "base.html" %}
 {% block content %}
 <!-- 统计卡片 -->
-<div class="row mb-4">
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-start border-primary border-4 py-2">
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col me-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">已用空间</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">42.5 GB / 100 GB</div>
-                    </div>
-                    <div class="col-auto"><i class="bi bi-cloud-upload text-gray-300 h3"></i></div>
-                </div>
-            </div>
+<div class="nd-stats">
+    <div class="nd-stat-card">
+        <div class="nd-stat-icon" style="background: #eef2ff; color: #4f46e5;">
+            <i class="bi bi-files"></i>
+        </div>
+        <div>
+            <div class="nd-stat-value">{{ total_files }}</div>
+            <div class="nd-stat-label">文件总数</div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-start border-success border-4 py-2">
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col me-2">
-                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">文件总数</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ files|length }} 个文件</div>
-                    </div>
-                    <div class="col-auto"><i class="bi bi-file-earmark-check text-gray-300 h3"></i></div>
-                </div>
-            </div>
+    <div class="nd-stat-card">
+        <div class="nd-stat-icon" style="background: #f0fdf4; color: #16a34a;">
+            <i class="bi bi-hdd"></i>
+        </div>
+        <div>
+            <div class="nd-stat-value">{{ total_size | format_size }}</div>
+            <div class="nd-stat-label">已用空间</div>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-start border-info border-4 py-2">
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col me-2">
-                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">今日下载</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">128 次</div>
-                    </div>
-                    <div class="col-auto"><i class="bi bi-download text-gray-300 h3"></i></div>
-                </div>
-            </div>
+    <div class="nd-stat-card">
+        <div class="nd-stat-icon" style="background: #fef3c7; color: #d97706;">
+            <i class="bi bi-share"></i>
         </div>
-    </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-start border-warning border-4 py-2">
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col me-2">
-                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">安全警告</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">0</div>
-                    </div>
-                    <div class="col-auto"><i class="bi bi-shield-check text-gray-300 h3"></i></div>
-                </div>
-            </div>
+        <div>
+            <div class="nd-stat-value">{{ total_shares }}</div>
+            <div class="nd-stat-label">分享链接</div>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <!-- 文件列表 (主体) -->
-    <div class="col-lg-8">
-        <div class="card mb-4">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                <h6 class="m-0 font-weight-bold text-primary">我的文件库</h6>
-                <form method="POST" action="{{ url_for('files.upload') }}" enctype="multipart/form-data" class="d-flex gap-2">
-                    <input type="file" name="file" class="form-control form-control-sm" required>
-                    <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-upload"></i> 上传</button>
+<div class="nd-content-grid">
+    <!-- 文件区域 -->
+    <div class="nd-files-section">
+        <!-- 工具栏 -->
+        <div class="nd-toolbar">
+            <div class="nd-breadcrumb">
+                <a href="{{ url_for('files.index') }}"><i class="bi bi-house-door"></i> 全部文件</a>
+                {% for crumb in breadcrumbs %}
+                <span class="nd-breadcrumb-sep">/</span>
+                <a href="{{ url_for('files.index', folder_id=crumb.id) }}">{{ crumb.name }}</a>
+                {% endfor %}
+            </div>
+            <div class="nd-toolbar-actions">
+                <button class="nd-btn nd-btn-outline" data-bs-toggle="modal" data-bs-target="#newFolderModal">
+                    <i class="bi bi-folder-plus"></i> 新建文件夹
+                </button>
+                <form method="POST" action="{{ url_for('files.upload') }}" enctype="multipart/form-data" class="nd-upload-form" id="uploadForm">
+                    {% if current_folder %}
+                    <input type="hidden" name="folder_id" value="{{ current_folder.id }}">
+                    {% endif %}
+                    <label class="nd-btn nd-btn-primary" for="fileInput">
+                        <i class="bi bi-cloud-upload"></i> 上传文件
+                    </label>
+                    <input type="file" name="file" id="fileInput" multiple hidden onchange="document.getElementById('uploadForm').submit()">
                 </form>
             </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="bg-light">
-                            <tr>
-                                <th class="px-4">文件名</th>
-                                <th>大小</th>
-                                <th>修改日期</th>
-                                <th class="text-end px-4">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for file in files %}
-                            <tr>
-                                <td class="px-4">
-                                    <div class="d-flex align-items-center">
-                                        <div class="rounded bg-light p-2 me-3"><i class="bi bi-file-earmark-text text-primary"></i></div>
-                                        <span class="fw-semibold text-dark">{{ file.original_name }}</span>
-                                    </div>
-                                </td>
-                                <td>{{ "%.1f"|format(file.size / 1024) }} KB</td>
-                                <td>{{ file.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
-                                <td class="text-end px-4">
-                                    <div class="btn-group shadow-sm">
-                                        <a href="{{ url_for('files.download', file_id=file.id) }}" class="btn btn-white btn-sm" title="下载"><i class="bi bi-download"></i></a>
-                                        <button type="button" class="btn btn-white btn-sm" data-bs-toggle="modal" data-bs-target="#shareModal{{ file.id }}"><i class="bi bi-share"></i></button>
-                                        <form method="POST" action="{{ url_for('files.delete', file_id=file.id) }}" class="d-inline" onsubmit="return confirm('确定删除？')">
-                                            <button type="submit" class="btn btn-white btn-sm text-danger"><i class="bi bi-trash"></i></button>
-                                        </form>
-                                    </div>
+        </div>
 
-                                    <!-- 分享模态框 -->
-                                    <div class="modal fade" id="shareModal{{ file.id }}" tabindex="-1">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content border-0 shadow">
-                                                <form method="POST" action="{{ url_for('files.create_share', file_id=file.id) }}">
-                                                    <div class="modal-header border-bottom-0">
-                                                        <h5 class="modal-title">创建分享链接</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                    </div>
-                                                    <div class="modal-body">
-                                                        <p class="text-muted">设置链接有效期：</p>
-                                                        <select name="hours" class="form-select shadow-none">
-                                                            <option value="1">1 小时</option>
-                                                            <option value="24" selected>24 小时</option>
-                                                            <option value="168">7 天</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="modal-footer border-top-0">
-                                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">取消</button>
-                                                        <button type="submit" class="btn btn-primary px-4">生成链接</button>
-                                                    </div>
-                                                </form>
-                                            </div>
+        <!-- 拖拽上传区域 -->
+        <div class="nd-drop-zone" id="dropZone">
+            <div class="nd-drop-overlay" id="dropOverlay">
+                <i class="bi bi-cloud-arrow-up"></i>
+                <span>松开鼠标上传文件</span>
+            </div>
+
+            <!-- 上传进度 -->
+            <div class="nd-upload-progress" id="uploadProgress" style="display:none;">
+                <div class="nd-progress-bar">
+                    <div class="nd-progress-fill" id="progressFill"></div>
+                </div>
+                <span class="nd-progress-text" id="progressText">上传中...</span>
+            </div>
+
+            <!-- 文件夹列表 -->
+            {% if folders %}
+            <div class="nd-folder-grid">
+                {% for folder in folders %}
+                <div class="nd-folder-item">
+                    <a href="{{ url_for('files.index', folder_id=folder.id) }}" class="nd-folder-link">
+                        <i class="bi bi-folder-fill"></i>
+                        <span>{{ folder.name }}</span>
+                    </a>
+                    <div class="nd-folder-actions">
+                        <button class="nd-icon-btn" data-bs-toggle="modal" data-bs-target="#renameModal{{ folder.id }}" title="重命名">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <form method="POST" action="{{ url_for('files.delete_folder', folder_id=folder.id) }}" class="d-inline" onsubmit="return confirm('删除文件夹「{{ folder.name }}」及其所有内容？')">
+                            <button type="submit" class="nd-icon-btn nd-icon-btn-danger" title="删除">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- 重命名模态框 -->
+                    <div class="modal fade" id="renameModal{{ folder.id }}" tabindex="-1">
+                        <div class="modal-dialog modal-sm modal-dialog-centered">
+                            <div class="modal-content nd-modal">
+                                <form method="POST" action="{{ url_for('files.rename_folder', folder_id=folder.id) }}">
+                                    <div class="modal-header">
+                                        <h6 class="modal-title">重命名文件夹</h6>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="text" name="name" class="nd-input" value="{{ folder.name }}" required autofocus>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="nd-btn nd-btn-outline" data-bs-dismiss="modal">取消</button>
+                                        <button type="submit" class="nd-btn nd-btn-primary">确定</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- 文件列表 -->
+            {% if files %}
+            <div class="nd-file-table-wrap">
+                <table class="nd-file-table">
+                    <thead>
+                        <tr>
+                            <th>文件名</th>
+                            <th>大小</th>
+                            <th>上传时间</th>
+                            <th class="text-end">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for file in files %}
+                        <tr>
+                            <td>
+                                <div class="nd-file-name">
+                                    <i class="bi {{ 'bi-file-earmark-image' if file.mime_type.startswith('image/') else 'bi-file-earmark-text' if file.mime_type.startswith('text/') else 'bi-file-earmark-music' if file.mime_type.startswith('audio/') else 'bi-file-earmark-play' if file.mime_type.startswith('video/') else 'bi-file-earmark-pdf' if file.mime_type == 'application/pdf' else 'bi-file-earmark' }}"></i>
+                                    {% if get_preview_type(file.mime_type) %}
+                                    <a href="#" class="nd-preview-link" data-file-id="{{ file.id }}">{{ file.original_name }}</a>
+                                    {% else %}
+                                    <span>{{ file.original_name }}</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="nd-file-size">{{ file.size | format_size }}</td>
+                            <td class="nd-file-date">{{ file.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                <div class="nd-file-actions">
+                                    <a href="{{ url_for('files.download', file_id=file.id) }}" class="nd-icon-btn" title="下载">
+                                        <i class="bi bi-download"></i>
+                                    </a>
+                                    <button class="nd-icon-btn" data-bs-toggle="modal" data-bs-target="#shareModal{{ file.id }}" title="分享">
+                                        <i class="bi bi-share"></i>
+                                    </button>
+                                    <form method="POST" action="{{ url_for('files.delete', file_id=file.id) }}" class="d-inline" onsubmit="return confirm('确定删除「{{ file.original_name }}」？')">
+                                        <button type="submit" class="nd-icon-btn nd-icon-btn-danger" title="删除">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <!-- 分享模态框 -->
+                                <div class="modal fade" id="shareModal{{ file.id }}" tabindex="-1">
+                                    <div class="modal-dialog modal-sm modal-dialog-centered">
+                                        <div class="modal-content nd-modal">
+                                            <form method="POST" action="{{ url_for('files.create_share', file_id=file.id) }}">
+                                                <div class="modal-header">
+                                                    <h6 class="modal-title">创建分享链接</h6>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <label class="nd-label">有效期</label>
+                                                    <select name="hours" class="nd-input">
+                                                        <option value="1">1 小时</option>
+                                                        <option value="24" selected>24 小时</option>
+                                                        <option value="168">7 天</option>
+                                                    </select>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="nd-btn nd-btn-outline" data-bs-dismiss="modal">取消</button>
+                                                    <button type="submit" class="nd-btn nd-btn-primary">生成链接</button>
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
-                                </td>
-                            </tr>
-                            {% else %}
-                            <tr>
-                                <td colspan="4" class="text-center py-5 text-muted">
-                                    <i class="bi bi-folder2-open display-4 d-block mb-3"></i>
-                                    暂无文件，请开始上传
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
+            {% endif %}
+
+            {% if not folders and not files %}
+            <div class="nd-empty">
+                <i class="bi bi-folder2-open"></i>
+                <p>此文件夹为空</p>
+                <p class="nd-empty-hint">拖拽文件到此处上传，或点击上方按钮</p>
+            </div>
+            {% endif %}
         </div>
     </div>
 
-    <!-- 侧边统计图 & 活动日志 -->
-    <div class="col-lg-4">
-        <div class="card mb-4">
-            <div class="card-header bg-white py-3">
-                <h6 class="m-0 font-weight-bold text-primary">存储趋势分析</h6>
-            </div>
-            <div class="card-body">
-                <div class="chart-area" style="height: 240px;">
-                    <canvas id="myAreaChart"></canvas>
+    <!-- 活动记录 -->
+    <div class="nd-activity-section">
+        <h6 class="nd-section-title"><i class="bi bi-clock-history"></i> 最近活动</h6>
+        {% if activities %}
+        <div class="nd-activity-list">
+            {% for act in activities %}
+            <div class="nd-activity-item">
+                <div class="nd-activity-icon">
+                    <i class="bi bi-{{ 'cloud-upload' if act.action == 'upload' else 'download' if act.action == 'download' else 'trash' if act.action.startswith('delete') else 'share' if act.action == 'share' else 'folder-plus' if act.action == 'create_folder' else 'pencil' if act.action == 'rename_folder' else 'activity' }}"></i>
+                </div>
+                <div class="nd-activity-info">
+                    <span class="nd-activity-detail">{{ act.detail }}</span>
+                    <span class="nd-activity-time">{{ act.created_at.strftime('%m-%d %H:%M') }}</span>
                 </div>
             </div>
+            {% endfor %}
         </div>
+        {% else %}
+        <p class="nd-activity-empty">暂无活动记录</p>
+        {% endif %}
+    </div>
+</div>
 
-        <div class="card">
-            <div class="card-header bg-white py-3">
-                <h6 class="m-0 font-weight-bold text-primary">最近活动记录</h6>
-            </div>
-            <div class="card-body p-0">
-                <div class="list-group list-group-flush" style="font-size: 0.85rem;">
-                    <div class="list-group-item bg-transparent py-3">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h6 class="mb-1 fw-bold">系统更新</h6>
-                            <small class="text-muted">3分钟前</small>
-                        </div>
-                        <p class="mb-1 text-muted">Brotli 压缩模块已成功启用并生效。</p>
-                    </div>
-                    <div class="list-group-item bg-transparent py-3">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h6 class="mb-1 fw-bold">文件上传完成</h6>
-                            <small class="text-muted">2小时前</small>
-                        </div>
-                        <p class="mb-1 text-muted">用户 {{ current_user.username }} 上传了 "test_data.zip"。</p>
-                    </div>
-                    <div class="list-group-item bg-transparent py-3 text-center border-0">
-                        <a href="#" class="text-primary text-decoration-none">查看所有日志 <i class="bi bi-arrow-right"></i></a>
-                    </div>
+<!-- 新建文件夹模态框 -->
+<div class="modal fade" id="newFolderModal" tabindex="-1">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content nd-modal">
+            <form method="POST" action="{{ url_for('files.create_folder') }}">
+                {% if current_folder %}
+                <input type="hidden" name="parent_id" value="{{ current_folder.id }}">
+                {% endif %}
+                <div class="modal-header">
+                    <h6 class="modal-title">新建文件夹</h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
+                <div class="modal-body">
+                    <input type="text" name="name" class="nd-input" placeholder="文件夹名称" required autofocus>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="nd-btn nd-btn-outline" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="nd-btn nd-btn-primary">创建</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 文件预览模态框 -->
+<div class="modal fade" id="previewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content nd-modal">
+            <div class="modal-header">
+                <h6 class="modal-title" id="previewTitle">预览</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body nd-preview-body" id="previewBody">
             </div>
         </div>
     </div>
@@ -185,37 +268,127 @@
 
 {% block scripts %}
 <script>
-    // 渲染存储趋势图表 (增加页面初始化负载)
-    var ctx = document.getElementById("myAreaChart");
-    var myLineChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: ["4月12", "4月13", "4月14", "4月15", "4月16", "4月17", "4月18"],
-        datasets: [{
-          label: "存储占用 (GB)",
-          lineTension: 0.3,
-          backgroundColor: "rgba(78, 115, 223, 0.05)",
-          borderColor: "rgba(78, 115, 223, 1)",
-          pointRadius: 3,
-          pointBackgroundColor: "rgba(78, 115, 223, 1)",
-          pointBorderColor: "rgba(78, 115, 223, 1)",
-          pointHoverRadius: 3,
-          pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
-          pointHoverBorderColor: "rgba(78, 115, 223, 1)",
-          pointHitRadius: 10,
-          pointBorderWidth: 2,
-          data: [12.5, 15.2, 18.9, 24.1, 32.5, 38.2, 42.5],
-        }],
-      },
-      options: {
-        maintainAspectRatio: false,
-        layout: { padding: { left: 10, right: 25, top: 25, bottom: 0 } },
-        scales: {
-          x: { grid: { display: false, drawBorder: false } },
-          y: { ticks: { maxTicksLimit: 5, padding: 10 } }
-        },
-        plugins: { legend: { display: false } }
-      }
+(function() {
+    const dropZone = document.getElementById('dropZone');
+    const dropOverlay = document.getElementById('dropOverlay');
+    const uploadProgress = document.getElementById('uploadProgress');
+    const progressFill = document.getElementById('progressFill');
+    const progressText = document.getElementById('progressText');
+
+    // 拖拽上传
+    let dragCounter = 0;
+
+    dropZone.addEventListener('dragenter', function(e) {
+        e.preventDefault();
+        dragCounter++;
+        dropOverlay.classList.add('active');
     });
+
+    dropZone.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        dragCounter--;
+        if (dragCounter === 0) {
+            dropOverlay.classList.remove('active');
+        }
+    });
+
+    dropZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+    });
+
+    dropZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        dragCounter = 0;
+        dropOverlay.classList.remove('active');
+
+        const files = e.dataTransfer.files;
+        if (files.length === 0) return;
+
+        const formData = new FormData();
+        for (let i = 0; i < files.length; i++) {
+            formData.append('file', files[i]);
+        }
+
+        const folderId = '{{ current_folder.id if current_folder else "" }}';
+        if (folderId) {
+            formData.append('folder_id', folderId);
+        }
+
+        uploadProgress.style.display = 'flex';
+        progressFill.style.width = '0%';
+        progressText.textContent = '上传中...';
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '{{ url_for("files.upload_ajax") }}');
+
+        xhr.upload.addEventListener('progress', function(e) {
+            if (e.lengthComputable) {
+                const pct = Math.round((e.loaded / e.total) * 100);
+                progressFill.style.width = pct + '%';
+                progressText.textContent = pct + '%';
+            }
+        });
+
+        xhr.addEventListener('load', function() {
+            if (xhr.status === 200) {
+                const result = JSON.parse(xhr.responseText);
+                progressText.textContent = '上传完成 (' + result.count + ' 个文件)';
+                progressFill.style.width = '100%';
+                setTimeout(function() { location.reload(); }, 800);
+            } else {
+                progressText.textContent = '上传失败';
+                progressFill.style.background = '#ef4444';
+            }
+        });
+
+        xhr.addEventListener('error', function() {
+            progressText.textContent = '上传失败';
+            progressFill.style.background = '#ef4444';
+        });
+
+        xhr.send(formData);
+    });
+
+    // 文件预览
+    document.querySelectorAll('.nd-preview-link').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const fileId = this.dataset.fileId;
+
+            fetch('/preview/' + fileId)
+                .then(r => r.json())
+                .then(data => {
+                    const body = document.getElementById('previewBody');
+                    document.getElementById('previewTitle').textContent = data.name;
+
+                    if (data.type === 'image') {
+                        body.innerHTML = '<img src="' + data.url + '" class="nd-preview-img">';
+                    } else if (data.type === 'video') {
+                        body.innerHTML = '<video controls class="nd-preview-media"><source src="' + data.url + '"></video>';
+                    } else if (data.type === 'audio') {
+                        body.innerHTML = '<audio controls class="nd-preview-media"><source src="' + data.url + '"></audio>';
+                    } else if (data.type === 'pdf') {
+                        body.innerHTML = '<iframe src="' + data.url + '" class="nd-preview-pdf"></iframe>';
+                    } else if (data.type === 'text') {
+                        const pre = document.createElement('pre');
+                        pre.className = 'nd-preview-text';
+                        pre.textContent = data.content;
+                        body.innerHTML = '';
+                        body.appendChild(pre);
+                    }
+
+                    new bootstrap.Modal(document.getElementById('previewModal')).show();
+                })
+                .catch(() => {
+                    alert('预览加载失败');
+                });
+        });
+    });
+
+    // 自动关闭 alert
+    document.querySelectorAll('.nd-alert').forEach(function(el) {
+        setTimeout(function() { el.style.opacity = '0'; setTimeout(function() { el.remove(); }, 300); }, 5000);
+    });
+})();
 </script>
 {% endblock %}

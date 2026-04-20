@@ -1,21 +1,27 @@
 {% extends "base.html" %}
 {% block title %}登录 - NetDisk{% endblock %}
 {% block content %}
-<div class="auth-card">
-    <h2>欢迎回来</h2>
-    <form method="POST">
-        <div class="form-group">
-            <label>用户名</label>
-            <input type="text" name="username" required autofocus placeholder="请输入用户名">
+<div class="nd-auth-page">
+    <div class="nd-auth-card">
+        <div class="nd-auth-brand">
+            <i class="bi bi-cloud-fill"></i>
+            <h1>NetDisk</h1>
         </div>
-        <div class="form-group">
-            <label>密码</label>
-            <input type="password" name="password" required placeholder="请输入密码">
-        </div>
-        <button type="submit" class="btn" style="width: 100%; margin-top: 1rem;">
-            <i data-lucide="log-in"></i> 登录
-        </button>
-    </form>
-    <p class="auth-link">没有账号？<a href="{{ url_for('auth.register') }}">立即注册</a></p>
+        <h2>欢迎回来</h2>
+        <form method="POST">
+            <div class="nd-form-group">
+                <label class="nd-label">用户名</label>
+                <input type="text" name="username" class="nd-input" required autofocus placeholder="请输入用户名">
+            </div>
+            <div class="nd-form-group">
+                <label class="nd-label">密码</label>
+                <input type="password" name="password" class="nd-input" required placeholder="请输入密码">
+            </div>
+            <button type="submit" class="nd-btn nd-btn-primary nd-btn-full">
+                <i class="bi bi-box-arrow-in-right"></i> 登录
+            </button>
+        </form>
+        <p class="nd-auth-link">没有账号？<a href="{{ url_for('auth.register') }}">立即注册</a></p>
+    </div>
 </div>
 {% endblock %}

@@ -3,96 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}NetDisk Pro - 高性能云盘{% endblock %}</title>
-    
-    <!-- 增加页面复杂度的外部资源 -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>{% block title %}NetDisk{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    
-    <style>
-        :root { --sidebar-width: 260px; }
-        body { font-family: 'Poppins', 'Noto Sans SC', sans-serif; background: #f4f7fe; overflow-x: hidden; }
-        .wrapper { display: flex; width: 100%; align-items: stretch; }
-        #sidebar { min-width: var(--sidebar-width); max-width: var(--sidebar-width); background: #fff; color: #333; transition: all 0.3s; box-shadow: 10px 0 20px rgba(0,0,0,0.02); z-index: 1000; min-height: 100vh; }
-        #content { width: 100%; padding: 25px; transition: all 0.3s; }
-        .sidebar-header { padding: 30px 25px; font-weight: 700; font-size: 1.5rem; color: #4e73df; }
-        .nav-link { padding: 12px 25px; color: #a3abc1; font-weight: 500; border-left: 3px solid transparent; }
-        .nav-link.active { color: #4e73df; background: rgba(78, 115, 223, 0.05); border-left-color: #4e73df; }
-        .nav-link i { margin-right: 10px; }
-        .card { border: none; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}?v=2" rel="stylesheet">
+    {% block head %}{% endblock %}
 </head>
 <body>
-    <div class="wrapper">
-        <!-- 复杂的侧边栏结构 -->
-        <nav id="sidebar">
-            <div class="sidebar-header">
-                <i class="bi bi-cloud-check-fill"></i> NetDisk Pro
-            </div>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link active" href="#"><i class="bi bi-speedometer2"></i> 控制面板</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="bi bi-files"></i> 全部文件</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="bi bi-share"></i> 我的分享</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="bi bi-star"></i> 收藏夹</a>
-                </li>
-                <li class="nav-item mt-4">
-                    <small class="px-4 text-uppercase text-muted" style="font-size: 0.7rem; letter-spacing: 1px;">系统设置</small>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="bi bi-person"></i> 个人中心</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#"><i class="bi bi-gear"></i> 安全设置</a>
-                </li>
-                {% if current_user.is_authenticated %}
-                <li class="nav-item mt-5">
-                    <a class="nav-link text-danger" href="{{ url_for('auth.logout') }}"><i class="bi bi-box-arrow-left"></i> 退出登录</a>
-                </li>
-                {% endif %}
-            </ul>
-        </nav>
-
-        <div id="content">
-            <nav class="navbar navbar-expand-lg navbar-light bg-transparent mb-4">
-                <div class="container-fluid">
-                    <button type="button" class="btn btn-white shadow-sm me-3"><i class="bi bi-list"></i></button>
-                    <div class="ms-auto d-flex align-items-center">
-                        <div class="dropdown">
-                            <a class="text-dark text-decoration-none dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                                <img src="https://ui-avatars.com/api/?name={{ current_user.username if current_user.is_authenticated else 'Guest' }}&background=4e73df&color=fff" class="rounded-circle me-2" width="35">
-                                <span>{{ current_user.username if current_user.is_authenticated else '游客' }}</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </nav>
-
-            <div class="container-fluid">
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-
-                {% block content %}{% endblock %}
+    {% if current_user.is_authenticated %}
+    <nav class="nd-navbar">
+        <div class="nd-navbar-inner">
+            <a href="{{ url_for('files.index') }}" class="nd-brand">
+                <i class="bi bi-cloud-fill"></i> NetDisk
+            </a>
+            <div class="nd-nav-right">
+                <span class="nd-user">
+                    <i class="bi bi-person-circle"></i>
+                    {{ current_user.username }}
+                </span>
+                <a href="{{ url_for('auth.logout') }}" class="nd-logout" title="退出登录">
+                    <i class="bi bi-box-arrow-right"></i>
+                </a>
             </div>
         </div>
-    </div>
+    </nav>
+    {% endif %}
+
+    <main class="nd-main">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="nd-alerts">
+                {% for category, message in messages %}
+                    <div class="nd-alert nd-alert-{{ category }}" onclick="this.remove()">
+                        <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+                        <span>{{ message }}</span>
+                        <i class="bi bi-x ms-auto nd-alert-close"></i>
+                    </div>
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     {% block scripts %}{% endblock %}
